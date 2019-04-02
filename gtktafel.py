@@ -151,17 +151,39 @@ class TafelWindow(Gtk.Window):
 
         # Let op: de variabelen tafel en tot_en_met zijn strings.
         #
-        # Hieronder worden ze botweg omgezet naar getallen (int's) zonder
-        # te checken of dat eigenijk wel kan.
+        # Hieronder worden ze omgezet naar getallen (int's). Als we dat gewoon zouden
+        # doen en de gebruiker typt iets in een invulvak dat niet om te zetten is
+        # naar een int, dan zou het programma crashen met wat een "exception" heet.
         #
-        # Code om dit te checken of af te vangen is bewust weggelaten om dit simpele
-        # programma niet nog ingewikkelder te maken :-)
+        # Een paar optie om dat te voorkomen:
         #
-        # Typ je dus bijv "aap" in plaats van een getal in een invulvak, dan gaat het
-        # programma crashen op de volgende regels:
+        #   - de invulvakjes (Gtk.Entry) overerven en dan iets toevoegen waarmee
+        #     elk karakter dat er in wordt getypt gecontroleerd word: als het geen
+        #     cijfer is wordt ie dan tegegehouden.
+        #     Dit is best ingewikkeld, en er moet ook nog iets voor gemaakt worden
+        #     Dat de Gtk.Entry nooit leeg kan zijn, want daar zou ie ook op crashen.
         #
-        tafel = int(tafel)
-        tot_en_met = int(tot_en_met)
+        #   - Als er op de kop wordt geklikt eerst controleren of er cijfers in staan
+        #     en de string er in niet leeg is. Als dat toch zo is, doen we gewoon
+        #     net of er '0' in staat.
+        #
+        #   - De exception gewoon laten gebeuren, maar afvangen en '0' gebruiken.
+        #
+        # In plaats van net doen alsof er een '0' in stond zouden we ook kunnen
+        # kiezen voor een mooi error-dialoog window. Maar we houden het hier nu
+        # zo eenvoudig mogelijk en gebruiken '0'.
+        #
+        # Hieronder wordt de exception afgevangen. Een belangrijk concept in Python.
+        #
+        try:
+            tafel = int(tafel)
+        except ValueError:
+            tafel = 0
+
+        try:
+            tot_en_met = int(tot_en_met)
+        except ValueError:
+            tot_en_met = 0
 
         # Oude data uit de GUI output-list verwijderen voordat we er nieuwe in gaan
         # zetten, anders krijgen we steeds meer tafels onder elkaar in de lijst.
